@@ -46,6 +46,7 @@ def robot_path(robot_pos, robot_pos_d, occupancy):
     y = current.y
     
     if x == x_d and y == y_d:
+      print(current.x, current.y)
       new_node = Node(x, y, current.parent, current.cost)
       path.append(new_node)
       break
@@ -61,31 +62,38 @@ def robot_path(robot_pos, robot_pos_d, occupancy):
       
       if x2 >= 0 and x2 < 10 and y2 >= 0 and y2 < 10:
         if occupancy[x2][y2] != np.inf and [x2, y2] not in visited:
-          new_node = Node(x2, y2, current, distance([x2, y2], [x_d, y_d]))
+          new_node = Node(x2, y2, current, distance([x2, y2], [x_d, y_d])+occupancy[x2][y2])
           frontier.append(new_node)
           
     frontier.sort(key = lambda x: x.cost , reverse=True)
+    
 
   return path
 
 def main ():
-  occupancy = np.ones((10, 10))
+  
+
+  occupancy = 10 * np.random.rand(10, 10)
   occupancy[0:5, 0] = np.inf
   occupancy[5, 0:5] = np.inf
   occupancy[5:8, 5] = np.inf
   occupancy[0:3, 5:8] = np.inf
   occupancy[7:9, 3] = np.inf
   occupancy[5:10, 8] = np.inf
-       
+
   robot_pos_c = [9, 0] # Robot current position
   robot_pos_d = [0, 2] # Robot desired position
 
   path = robot_path(robot_pos_c, robot_pos_d, occupancy)
 
   current = path.pop(0)
-
+  
+  final_path = []
+  
   while current.parent != None:
-    print("[", current.x , current.y, "]")
+    final_path.append([current.x, current.y])
     current = current.parent
-  print("[", robot_pos_c[0] , robot_pos_c[1], "]")
+
+  final_path.append([current.x, current.y])
+  print(final_path)
 main()
